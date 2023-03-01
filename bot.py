@@ -35,7 +35,7 @@ async def sync(ctx) -> None:
     synced = await ctx.bot.tree.sync()
     print(synced)
     await ctx.send(
-        f"Synced {len(synced)} commands"
+        f"Synced **{len(synced)}** commands"
     )
 
 # Remove Slash Commands   
@@ -46,13 +46,6 @@ async def remove(ctx):
     await ctx.send(
         f"Removed {len(synced)} commands"
     )
-
-@client.command()
-@commands.is_owner()
-async def play(ctx):
-    source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('song.flac'), volume = 0.3)
-    ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
-    await ctx.send('Now playing: audio.mp3')
 
 # Load Cog
 @client.command()
@@ -82,7 +75,7 @@ async def on_message(message):
     user_message = str(message.content)
     channel = str(message.channel.name)
 
-    if message.author == client.user and message.author.id != 997771530337521784:
+    if message.author == client.user and message.author.id != APPLICATION_ID:
         return
     else:
         print(f'({channel}) {username}: {user_message}')
@@ -102,8 +95,6 @@ async def on_member_join(member):
         print(f"{member} has joined the server")
     except Exception as e:
         print(f"Error: {member} joining server:\n{e}")
-    
-    
     await member.add_roles(role)
     
 # Load cogs on launch
