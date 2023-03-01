@@ -89,13 +89,14 @@ async def on_message(message):
 # New User
 @client.event
 async def on_member_join(member):
-    try:
-        role = discord.utils.get(member.guild.roles, name='Camel')
+    if member.guild.id == 145502759997800449:
+        try:
+            role = discord.utils.get(member.guild.roles, name='Camel')
+            await member.add_roles(role)
+            print(f"{member} has joined the server")
+        except Exception as e:
+            print(f"Error: {member} joining server:\n{e}")
         await member.add_roles(role)
-        print(f"{member} has joined the server")
-    except Exception as e:
-        print(f"Error: {member} joining server:\n{e}")
-    await member.add_roles(role)
     
 # Load cogs on launch
 async def load_extentions():
