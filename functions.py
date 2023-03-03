@@ -1,6 +1,7 @@
 import discord
 import requests
 import datetime
+from random import randint
 from discord.ext import tasks
 
 # Check number of users online
@@ -28,5 +29,27 @@ async def daily_fact(client):
             print("Error: Request failed with status code", response.status_code)
 
         await channel.edit(topic=fact)
+
+@tasks.loop(hours=24)
+async def shiny_check(client):
+    check = randint(1,4)
+    print(f"Shiny Check: {check}")
+    if check == 1:
+        print("Shiny Found")
+        with open("assets/shiny-psyduck.png", 'rb') as f:
+            pic = f.read()
+        nickname = 'Shiny Psyduck'
+    else:
+        with open("assets/psyduck.png", 'rb') as f:
+            pic = f.read()
+        nickname = 'Psyduck'
+
+    try:
+        guild = client.get_guild(145502759997800449)
+        await guild.me.edit(nick = nickname)        
+        await client.user.edit(avatar=pic)
+    except Exception as e:
+        print(f"Shiny Check Error: {e}")
+        
 
 

@@ -10,6 +10,7 @@ from bot_token import APPLICATION_ID
 from discord.ext import tasks, commands
 from functions import online_user_count
 from functions import daily_fact
+from functions import shiny_check
 from database_functions import grant_exp
 TOKEN = BOT_TOKEN
 
@@ -20,6 +21,7 @@ intents.voice_states = True
 
 client = commands.Bot(command_prefix = '.', intents=intents, application_id = APPLICATION_ID)
 
+# Bot start events:
 @client.event
 async def on_ready():
     print('{0.user} initiated'.format(client))
@@ -27,8 +29,10 @@ async def on_ready():
     cursor = db.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS main (user_id int, exp int, credits int, messages int, PRIMARY KEY (user_id))")
 
+    # Start background functions
     online_user_count.start(client)
     daily_fact.start(client)
+    shiny_check.start(client)
 
 # Sync Slash Commands   
 @client.command()
@@ -94,8 +98,7 @@ async def on_message(message):
 
     await client.process_commands(message)
 
-
-# New User
+# New User Joins
 @client.event
 async def on_member_join(member):
     if member.guild.id == 145502759997800449:
