@@ -1,64 +1,32 @@
-import sqlite3
-import random
+import discord
+import requests
+import datetime
+from discord.ext import tasks
 
-def grant_exp(user, exp):
-    db = sqlite3.connect('HiBot.db')
-    cursor = db.cursor()
-    cursor.execute("INSERT or IGNORE INTO main (user_id, exp, credits, messages) VALUES (?,?,?,?)", (user, exp, 0, 0))
+# Check number of users online
+@tasks.loop(minutes=5)
+async def online_user_count(client):
+    guild = client.get_guild(145502759997800449)
+    online_user_count = 0
+    for member in guild.members:
+        if member.status != discord.Status.offline:
+            online_user_count += 1
+    print(f"Current number of online users: {online_user_count}")
 
-    if cursor.rowcount == 0:
-        cursor.execute(f"UPDATE main SET exp = exp + {exp} WHERE user_id = ?", (user,))
-        cursor.execute(f"UPDATE main SET messages = messages + 1 WHERE user_id = ?", (user,))
+@tasks.loop(minutes=1)
+async def daily_fact(client):
+    # Get current time:
+    now = datetime.datetime.now()
+    channel = client.get_channel(145502759997800449)
+    if int(now.hour) == 0 and int(now.minute) == 0:
+        response = requests.get("https://uselessfacts.jsph.pl/random.json")
 
-    cursor.execute("SELECT * FROM main WHERE user_id = ?", (user,))
-    data = cursor.fetchone()
+        if response.status_code == 200:
+            data = response.json()
+            fact = data["text"]
+        else:
+            print("Error: Request failed with status code", response.status_code)
 
-    db.commit()
-    cursor.close()
+        await channel.edit(topic=fact)
 
-    return data
-    
-def grant_credits(user, credit):
-    db = sqlite3.connect('HiBot.db')
-    cursor = db.cursor()
-    cursor.execute("INSERT or IGNORE INTO main (user_id, exp, credits, messages) VALUES (?,?,?,?)", (user, 0, credit, 0, 0))
-
-    if cursor.rowcount == 0:
-        cursor.execute(f"UPDATE main SET credits = credits + {credit} WHERE user_id = ?", (user,))
-
-    cursor.execute("SELECT * FROM main WHERE user_id = ?", (user,))
-    data = cursor.fetchone()
-
-    db.commit()
-    cursor.close()
-
-    return data
-
-def check_exp(user_id):
-    db = sqlite3.connect('HiBot.db')
-    cursor = db.cursor()
-    cursor.execute("INSERT or IGNORE INTO main (user_id, exp, credits, messages) VALUES (?,?,?,?)", (user_id, 0, 0, 0))
-
-    cursor.execute("SELECT exp FROM main WHERE user_id = ?", (user_id,))
-    data = cursor.fetchone()
-    exp = data[0]
-
-    db.commit()
-    cursor.close()
-
-    return exp
-
-def check_credits(user_id):
-    db = sqlite3.connect('HiBot.db')
-    cursor = db.cursor()
-    cursor.execute("INSERT or IGNORE INTO main (user_id, exp, credits, messagesl) VALUES (?,?,?,?)", (user_id, 0, 0, 0))
-
-    cursor.execute("SELECT credits FROM main WHERE user_id = ?", (user_id,))
-    data = cursor.fetchone()
-    credits = data[0]
-
-    db.commit()
-    cursor.close()
-
-    return credits   
 

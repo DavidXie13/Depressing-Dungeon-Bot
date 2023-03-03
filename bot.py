@@ -1,11 +1,16 @@
-from discord.ext import commands
+
 import os
 import sqlite3
 import discord
 import asyncio
+import requests
+import datetime
 from bot_token import BOT_TOKEN
 from bot_token import APPLICATION_ID
-from functions import grant_exp
+from discord.ext import tasks, commands
+from functions import online_user_count
+from functions import daily_fact
+from database_functions import grant_exp
 TOKEN = BOT_TOKEN
 
 intents = discord.Intents.all()
@@ -22,11 +27,8 @@ async def on_ready():
     cursor = db.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS main (user_id int, exp int, credits int, messages int, PRIMARY KEY (user_id))")
 
-    # try:
-    #     channel = client.get_channel(146942949341528064)
-    #     await channel.connect()
-    # except Exception as e:
-    #     print(f"Failed to join channel: {e}")
+    online_user_count.start(client)
+    daily_fact.start(client)
 
 # Sync Slash Commands   
 @client.command()
@@ -68,6 +70,12 @@ async def reload(ctx, extension):
     await client.unload_extension(f'cogs.{extension}')
     await client.load_extension(f'cogs.{extension}')
     print(f'{extension} has been reloaded')
+    
+# Load cogs on launch
+async def load_extentions():
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            await client.load_extension(f'cogs.{filename[:-3]}')
 
 @client.event
 async def on_message(message):
@@ -86,6 +94,7 @@ async def on_message(message):
 
     await client.process_commands(message)
 
+
 # New User
 @client.event
 async def on_member_join(member):
@@ -98,12 +107,6 @@ async def on_member_join(member):
             print(f"Error: {member} joining server:\n{e}")
         await member.add_roles(role)
     
-# Load cogs on launch
-async def load_extentions():
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            await client.load_extension(f'cogs.{filename[:-3]}')
-
 async def main():
     async with client:
         await load_extentions()
