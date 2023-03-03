@@ -47,7 +47,10 @@ class Music(commands.Cog):
         # Queue songs
         for song in songs:
             source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('Music/' + song), volume = 0.5)
-            self.queue.append((source, song.split('.')[0]))
+            title = song.split(".")
+            title = ".".join(title[:-1])
+
+            self.queue.append((source, title))
 
         try:
             vc = discord.utils.get(self.client.voice_clients, guild=interaction.guild)
@@ -118,5 +121,3 @@ class Music(commands.Cog):
 
 async def setup(client):
     await client.add_cog(Music(client))
-
-        
