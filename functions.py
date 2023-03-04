@@ -8,11 +8,14 @@ from discord.ext import tasks
 @tasks.loop(minutes=5)
 async def online_user_count(client):
     guild = client.get_guild(145502759997800449)
+    now = datetime.datetime.now()
     online_user_count = 0
     for member in guild.members:
         if member.status != discord.Status.offline:
             online_user_count += 1
-    print(f"Current number of online users: {online_user_count}")
+    print(f"{now.strftime('%Y-%m-%d %H:%M')} - Current number of online users: {online_user_count}")
+    with open('log.txt', 'a') as file:
+        file.write(f"{now.strftime('%Y-%m-%d %H:%M')} - Current number of online users: {online_user_count}\n")
 
 @tasks.loop(minutes=1)
 async def daily_fact(client):
@@ -29,8 +32,9 @@ async def daily_fact(client):
             print("Error: Request failed with status code", response.status_code)
 
         await channel.edit(topic=fact)
+        await shiny_check(client)
+        
 
-@tasks.loop(hours=24)
 async def shiny_check(client):
     check = randint(1,4)
     print(f"Shiny Check: {check}")

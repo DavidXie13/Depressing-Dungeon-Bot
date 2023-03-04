@@ -32,7 +32,6 @@ async def on_ready():
     # Start background functions
     online_user_count.start(client)
     daily_fact.start(client)
-    shiny_check.start(client)
 
 # Sync Slash Commands   
 @client.command()
