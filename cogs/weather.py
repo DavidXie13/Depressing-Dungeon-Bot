@@ -8,9 +8,10 @@ class Weather(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @app_commands.command(name="weather", description="Get the current weather in Melbourne, Australia")
+    @app_commands.command(name="weather", 
+                          description="Get the current weather in Melbourne, Australia")
     async def weather(self, interaction: discord.Interaction):
-        channel_id = interaction.channel
+        #channel_id = interaction.channel
         try:
             country = 'AU'
             city = 'Melbourne'

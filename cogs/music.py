@@ -13,12 +13,13 @@ class Music(commands.Cog):
         self.voice_channel = None
         self.channel_id = None
 
-    @app_commands.command(name="play", description="Play music")
+    @app_commands.command(name="play", 
+                          description="Play music")
     async def play(self, interaction : discord.Interaction):
         self.channel_id = interaction.channel
         
         # Check if already playing music:
-        if self.queue and self.voice_channel != None:
+        if self.queue and self.voice_channel is not None:
             await interaction.response.send_message("The bot is already playing music")
             return
 
@@ -28,11 +29,11 @@ class Music(commands.Cog):
             print(f"Channel detected:: {voice_channel}")
         except Exception as e:
             print(f"Channel detected error:: {e}")
-            await interaction.response.send_message(f"You are not in a voice channel")
+            await interaction.response.send_message("You are not in a voice channel")
             return
 
         # Connect to voice channel
-        if self.voice_channel == None:
+        if self.voice_channel is None:
             try:
                 self.voice_channel = await voice_channel.connect()
             except Exception as e:
@@ -42,7 +43,7 @@ class Music(commands.Cog):
 
         songs = os.listdir("Music")
         random.shuffle(songs)
-        await interaction.response.send_message(f"Bot will begin playing music")
+        await interaction.response.send_message("Bot will begin playing music")
         
         # Queue songs
         for song in songs:
@@ -61,7 +62,7 @@ class Music(commands.Cog):
     @app_commands.command(name="stop", description="Stop playing music and clear queue")
     async def stop(self, interaction: discord.Interaction):
         try:
-            if self.voice_channel != None:
+            if self.voice_channel is not None:
                 await self.voice_channel.disconnect()
                 self.voice_channel = None
                 self.queue.clear()
@@ -72,7 +73,7 @@ class Music(commands.Cog):
     # Command to skip the current song and go to the next song
     @app_commands.command(name="skip", description="Skip to the next song")
     async def skip(self, interaction: discord.Interaction):
-        if self.voice_channel == None:
+        if self.voice_channel is None:
             print("Skip Failed: No Channel")
             return
         if not self.queue:
@@ -105,8 +106,8 @@ class Music(commands.Cog):
                 print(f"Play_next_song Function Error: {e}")
         else:
             
-            if self.voice_channel != None:            
-                await self.channel_id.send(f"Bot will now stop playing music")
+            if self.voice_channel is not None:            
+                await self.channel_id.send("Bot will now stop playing music")
                 await self.voice_channel.disconnect()
             self.voice_channel = None
             self.queue.clear()
@@ -115,7 +116,7 @@ class Music(commands.Cog):
     # debug command
     @commands.command()
     async def debug(self, ctx):
-        print(f"===== Debug =====")
+        print("===== Debug =====")
         print(f"Voice Channel: {self.voice_channel}\nQueue: {self.queue}\nChannel_id: {self.channel_id}")
         print("=================")
 

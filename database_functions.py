@@ -7,7 +7,7 @@ def grant_exp(user, exp):
 
     if cursor.rowcount == 0:
         cursor.execute(f"UPDATE main SET exp = exp + {exp} WHERE user_id = ?", (user,))
-        cursor.execute(f"UPDATE main SET messages = messages + 1 WHERE user_id = ?", (user,))
+        cursor.execute("UPDATE main SET messages = messages + 1 WHERE user_id = ?", (user,))
 
     cursor.execute("SELECT * FROM main WHERE user_id = ?", (user,))
     data = cursor.fetchone()
