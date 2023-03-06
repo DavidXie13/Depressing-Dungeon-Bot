@@ -1,16 +1,12 @@
-
 import os
 import sqlite3
 import discord
 import asyncio
-import requests
-import datetime
 from bot_token import BOT_TOKEN
 from bot_token import APPLICATION_ID
-from discord.ext import tasks, commands
+from discord.ext import commands
 from functions import online_user_count
-from functions import daily_fact
-from functions import shiny_check
+from functions import daily_minute_check
 from database_functions import grant_exp
 TOKEN = BOT_TOKEN
 
@@ -31,7 +27,7 @@ async def on_ready():
 
     # Start background functions
     online_user_count.start(client)
-    daily_fact.start(client)
+    daily_minute_check.start(client)
 
 # Sync Slash Commands   
 @client.command()
@@ -91,7 +87,7 @@ async def on_message(message):
     else:
         print(f'({channel}) {username}: {user_message}')
         try:
-            data = grant_exp(message.author.id, 1)
+            grant_exp(message.author.id, 1)
         except Exception as e:
             print(f"Error granting exp: {e}")
 

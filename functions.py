@@ -18,23 +18,26 @@ async def online_user_count(client):
         file.write(f"{now.strftime('%Y-%m-%d %H:%M')} - Current number of online users: {online_user_count}\n")
 
 @tasks.loop(minutes=1)
-async def daily_fact(client):
+async def daily_minute_check(client):
     # Get current time:
     now = datetime.datetime.now()
-    channel = client.get_channel(145502759997800449)
     if int(now.hour) == 0 and int(now.minute) == 0:
-        response = requests.get("https://uselessfacts.jsph.pl/random.json")
-
-        if response.status_code == 200:
-            data = response.json()
-            fact = data["text"]
-        else:
-            print("Error: Request failed with status code", response.status_code)
-
-        await channel.edit(topic=fact)
+        await daily_fact(client)
         await shiny_check(client)
-        
 
+async def daily_fact(client):
+    # Get current time:
+    channel = client.get_channel(145502759997800449)
+    response = requests.get("https://uselessfacts.jsph.pl/random.json")
+
+    if response.status_code == 200:
+        data = response.json()
+        fact = data["text"]
+    else:
+        print("Error: Request failed with status code", response.status_code)
+
+    await channel.edit(topic=fact)
+       
 async def shiny_check(client):
     check = randint(1,4)
     print(f"Shiny Check: {check}")
