@@ -14,8 +14,6 @@ async def online_user_count(client):
         if member.status != discord.Status.offline:
             online_user_count += 1
     print(f"{now.strftime('%Y-%m-%d %H:%M')} - Current number of online users: {online_user_count}")
-    with open('log.txt', 'a') as file:
-        file.write(f"{now.strftime('%Y-%m-%d %H:%M')} - Current number of online users: {online_user_count}\n")
 
 @tasks.loop(minutes=1)
 async def daily_minute_check(client):
