@@ -47,9 +47,15 @@ class Music(commands.Cog):
         
         # Queue songs
         for song in songs:
-            source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('Music/' + song), volume = 0.5)
+            try:
+                source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('Music/' + song), volume = 0.5)
+            except Exception as e:
+                print(f"Source Creation Error: {e}")
             title = song.split(".")
-            title = ".".join(title[:-1])
+            try:
+                title = ".".join(title[:-1])
+            except Exception as e:
+                print(f"Title Error: {e}")
 
             self.queue.append((source, title))
 
@@ -74,6 +80,7 @@ class Music(commands.Cog):
     @app_commands.command(name="skip", description="Skip to the next song")
     async def skip(self, interaction: discord.Interaction):
         if self.voice_channel is None:
+            await interaction.response.send_message("Bot is not currently playing music")
             print("Skip Failed: No Channel")
             return
         if not self.queue:

@@ -1,6 +1,6 @@
 HiBot.db
 bot_token.py
-log.txt
 Music/
 __pycache__/
 cogs/__pycache__/
+venv/
