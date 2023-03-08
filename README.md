@@ -7,3 +7,4 @@ Discord Bot developed for the Depressing Dungeon Discord Server
  - Daily random facts
  - Weather checking
  - Server Icon shiny checking
+
