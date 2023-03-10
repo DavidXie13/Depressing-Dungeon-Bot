@@ -2,6 +2,7 @@ import os
 import time
 import random
 import discord
+from mutagen.easyid3 import EasyID3
 from discord import app_commands
 from discord.ext import commands
 
@@ -51,13 +52,16 @@ class Music(commands.Cog):
                 source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('Music/' + song), volume = 0.5)
             except Exception as e:
                 print(f"Source Creation Error: {e}")
-            title = song.split(".")
+            # Use Mutagen to get title from metadata
             try:
-                title = ".".join(title[:-1])
+                audio = EasyID3(f"Music/{song}")
+                title = audio.get('title')[0]
+                artist = audio.get('artist')[0]
+                album = audio.get('album')[0]
             except Exception as e:
-                print(f"Title Error: {e}")
+                print(f"Mutagen Error: {e}")
 
-            self.queue.append((source, title))
+            self.queue.append((source, title, artist))
 
         try:
             vc = discord.utils.get(self.client.voice_clients, guild=interaction.guild)
@@ -106,9 +110,9 @@ class Music(commands.Cog):
     async def play_next_song(self, vc):
         if len(self.queue) > 0:
             try:
-                source, title = self.queue.pop(0)
+                source, title, artist = self.queue.pop(0)
                 vc.play(source, after=lambda e: self.client.loop.create_task(self.play_next_song(vc)))
-                await self.channel_id.send(f"Now Playing: **{title}**")
+                await self.channel_id.send(f"Now Playing: **{title}** by **{artist}**")
             except Exception as e:
                 print(f"Play_next_song Function Error: {e}")
         else:
