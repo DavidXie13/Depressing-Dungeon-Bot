@@ -2,7 +2,6 @@ import os
 import time
 import random
 import discord
-from mutagen.easyid3 import EasyID3
 from discord import app_commands
 from discord.ext import commands
 
@@ -52,14 +51,12 @@ class Music(commands.Cog):
                 source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('Music/' + song), volume = 0.5)
             except Exception as e:
                 print(f"Source Creation Error: {e}")
-            # Use Mutagen to get title from metadata
+            song = song.split("-")
             try:
-                audio = EasyID3(f"Music/{song}")
-                title = audio.get('title')[0]
-                artist = audio.get('artist')[0]
-                album = audio.get('album')[0]
+                artist = song[-1].split(".")[0].strip()
+                title = "-".join(song[:-1]).strip()
             except Exception as e:
-                print(f"Mutagen Error: {e}")
+                print(f"Title Error: {e}")
 
             self.queue.append((source, title, artist))
 
